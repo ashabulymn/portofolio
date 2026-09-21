@@ -14,6 +14,14 @@
   5. CMS authentication, save draft, publish, restore revision, logout.
 - Browser page and screenshot tools exercised; page title/content verified. Screenshot tool returned an attachment without dependable visual detail in this agent context; no pixel-quality certification claimed.
 
+## Additional verified continuation
+
+- Latest production suite: **6 passed (6.8 s)**, with keyboard skip-link navigation, reduced-motion preference and 320px overflow checks, plus invalid chat input returning HTTP 400, including malformed-image rejection, actual WebP decoding, image metadata removal, AI settings/connection fallback, typography/SEO editors, Person structured data and preview noindex.
+- Per-request script CSP nonces differ across requests; script policy excludes unsafe-inline. Existing interactive browser flows still pass.
+- Patched direct sharp dependency to 0.35.4 after inspecting upstream advisories; `npm audit --omit=dev`: zero vulnerabilities.
+- Stopped isolated QA server, copied its complete storage directory, restarted against the copy and reran all five tests: **5 passed (5.4 s)**. This is a local restore rehearsal, not production disaster-recovery certification.
+- Test setup now requests the application before inserting temporary administrators, ensuring runtime tables exist on fresh storage.
+
 ## Failures encountered and resolved
 
 - Missing Playwright Chromium: installed the matching browser.

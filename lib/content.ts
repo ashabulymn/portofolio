@@ -1,6 +1,8 @@
 export type Language = 'id' | 'en';
-export type Entry = { id: string; category: string; title: string; subtitle: string; body: string; order: number; visible: boolean; featured: boolean };
-export type Content = { name: string; role: string; intro: string; email: string; whatsapp: string; location: string; headline: string; entries: Entry[]; seo: { title: string; description: string }; settings: { motion: boolean; ai: boolean; maintenance: boolean; theme: 'light' | 'dark'; aiModel: string; aiBaseUrl: string; aiPrompt: string; whatsappMessage: string } };
+export type Entry = { url?: string; mediaId?: string; id: string; category: string; title: string; subtitle: string; body: string; order: number; visible: boolean; featured: boolean };
+export type AIOptions = { temperature: number; maxTokens: number; timeoutMs: number; welcome: string; suggestions: string[] };
+export const defaultAIOptions: AIOptions = { temperature: 0.2, maxTokens: 400, timeoutMs: 15000, welcome: '', suggestions: [] };
+export type Content = { appearance?: { font: 'sans' | 'serif'; spacing: 'compact' | 'relaxed' }; aiOptions?: AIOptions; name: string; role: string; intro: string; email: string; whatsapp: string; location: string; headline: string; entries: Entry[]; seo: { title: string; description: string; noindex?: boolean; imageId?: string }; settings: { motion: boolean; ai: boolean; maintenance: boolean; theme: 'light' | 'dark'; aiModel: string; aiBaseUrl: string; aiPrompt: string; whatsappMessage: string } };
 const services = [
   ['computer', 'Komputer & laptop', 'Computers & laptops', 'Perbaikan, instalasi, perawatan, dan troubleshooting.', 'Repair, installation, maintenance, and troubleshooting.'],
   ['network', 'Instalasi jaringan', 'Network installation', 'Koneksi LAN/FO, pemasangan perangkat, dan penanganan gangguan.', 'LAN/fiber connections, device installation, and troubleshooting.'],
@@ -34,7 +36,7 @@ export function initialContent(lang: Language): Content {
       ...services.map((s, i) => ({ id: s[0], category: 'services', title: s[en ? 2 : 1], subtitle: '', body: s[en ? 4 : 3], order: i, visible: true, featured: i < 4 })),
       ...jobs.map((j, i) => ({ id: `job-${i}`, category: 'experience', title: j[en ? 3 : 2], subtitle: `${j[1]} · ${j[0]}`, body: j[en ? 5 : 4], order: i, visible: true, featured: false })),
       { id: 'education', category: 'education', title: en ? 'Informatics Engineering' : 'Teknik Informatika', subtitle: 'Universitas Selamat Sri · Kendal · 2022-08 (CV)', body: en ? 'Final assignment: building cloud computing based on Proxmox Virtual Environment at SMK Muhammadiyah 1 Weleri. Degree wording in the source requires owner confirmation.' : 'Tugas akhir: Membangun Cloud Computing Berbasis Proxmox Virtual Environment pada SMK Muhammadiyah 1 Weleri.', order: 0, visible: true, featured: false },
-      ...['IT troubleshooting', 'Virtualization', 'System administration', 'Networking', 'Software development', 'Hardware & software maintenance'].map((title, i) => ({ id: `skill-${i}`, category: 'skills', title, subtitle: '', body: '', order: i, visible: true, featured: false })),
+      ...(en ? ['IT troubleshooting', 'Virtualization', 'System administration', 'Networking', 'Software development', 'Hardware & software maintenance'] : ['Pemecahan masalah TI', 'Virtualisasi', 'Administrasi sistem', 'Jaringan komputer', 'Pengembangan perangkat lunak', 'Pemeliharaan perangkat keras & perangkat lunak']).map((title, i) => ({ id: `skill-${i}`, category: 'skills', title, subtitle: '', body: '', order: i, visible: true, featured: false })),
     ],
   };
 }

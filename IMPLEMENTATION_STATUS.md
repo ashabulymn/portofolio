@@ -20,14 +20,13 @@ Status: VERIFIED LOCAL CHECKPOINT — NOT COMPLETE against Prompt.txt.
 ## Not complete / do not represent as production-ready
 
 - PostgreSQL + ORM migrations and S3 storage are not implemented; SQLite/local storage are a documented deviation.
-- Social/navigation/category/AI-knowledge records exist in CMS but not every record type has a complete public renderer or specialized relation editor. Project media assignment, image optimization and public media rendering are incomplete.
-- Featured flags are stored but do not yet drive a featured public layout.
-- AI lacks CMS connection-test UI, suggested questions, temperature/token/timeout controls, secret editing, and a verified live provider response. Credentials absent.
-- Theme typography/spacing customization, detailed feature switches, analytics controls, SEO image/structured data/per-page CMS routing are incomplete.
-- Some skill labels remain English in Indonesian content. English CV not supplied.
-- Contact email notification and configurable privacy retention are not implemented; inbox and mail/WhatsApp contact work.
-- Media magic-byte validation is not malware scanning or full image decoding; production upload hardening and streaming multipart size enforcement remain necessary.
-- Production CSP still permits inline scripts/styles; nonce-based CSP is not implemented.
+- Configured navigation/social links, featured project ordering, project image assignment and responsive public images are implemented. Specialized category relations remain incomplete.
+- AI connection testing, suggested questions, welcome text and temperature/token/timeout controls are implemented. Live provider verification remains blocked by absent credentials; secrets remain server-environment managed.
+- Typography/spacing controls, active-image Open Graph metadata, Person structured data and preview noindex are implemented. Detailed feature switches, analytics controls and per-page CMS routing remain incomplete.
+- New Indonesian seed content now translates skill labels. Existing editorial records are intentionally preserved rather than overwritten. English CV not supplied.
+- Contact email notification is not implemented; inbox and mail/WhatsApp contact work. Configurable inquiry retention is available through an explicit dry-run/apply operator command; scheduling and backup expiration remain operator responsibilities.
+- Multipart requests enforce a streaming 6 MB body cap before parsing, in addition to the 5 MB file cap. Images are fully decoded with a 24-megapixel input limit, resized to at most 2400px and re-encoded as metadata-stripped WebP. PDF malware scanning remains unavailable.
+- Production scripts use per-request nonce CSP; inline styles remain permitted for framework/UI compatibility.
 - No independent security review, full accessibility audit, measured performance budget, Docker build, Codespaces run, Cloudflare deployment, production backup-restore drill or independent-operator test has passed.
 - Reference MP4 frames were extracted/opened, but detailed visual interpretation could not be verified with the current image tool.
 

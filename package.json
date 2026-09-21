@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "playwright test",
+    "inquiries:prune": "node --experimental-strip-types scripts/prune-inquiries.ts",
     "seed:cv": "node --experimental-strip-types scripts/seed-cv.ts",
     "admin:create": "node --experimental-strip-types scripts/create-admin.ts"
   },
@@ -16,6 +17,7 @@
     "next": "^16.2.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "sharp": "^0.35.4",
     "zod": "^4.3.0"
   },
   "devDependencies": {

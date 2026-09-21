@@ -37,12 +37,15 @@ export function rateLimit(request: Request, bucket: string, max = 5, windowMs = 
     return row.count <= max;
   } finally { db.close(); }
 }
-export async function readJson(request: Request, max = 200000) {
-  if (!request.headers.get('content-type')?.startsWith('application/json')) throw new Error('JSON required');
+export async function readBody(request: Request, max: number) {
   if (Number(request.headers.get('content-length') || 0) > max) throw new Error('Request too large');
   const reader = request.body?.getReader();
   if (!reader) throw new Error('Body required');
   const chunks: Uint8Array[] = []; let size = 0;
   for (;;) { const { done, value } = await reader.read(); if (done) break; size += value.length; if (size > max) { await reader.cancel(); throw new Error('Request too large'); } chunks.push(value); }
-  return JSON.parse(Buffer.concat(chunks).toString('utf8'));
+  return Buffer.concat(chunks);
+}
+export async function readJson(request: Request, max = 200000) {
+  if (!request.headers.get('content-type')?.startsWith('application/json')) throw new Error('JSON required');
+  return JSON.parse((await readBody(request, max)).toString('utf8'));
 }

@@ -5,7 +5,8 @@ import path from 'node:path';
 const email = `qa-${randomBytes(6).toString('hex')}@localhost.test`;
 const password = randomBytes(24).toString('hex');
 let adminId: number;
-test.beforeAll(() => {
+test.beforeAll(async ({ request }) => {
+  expect((await request.get('/id')).status()).toBe(200);
   const db = new DatabaseSync(path.join(process.env.DATA_DIR || 'data', 'portfolio.sqlite'));
   const salt = randomBytes(16).toString('hex');
   adminId = Number(db.prepare('INSERT INTO admins (email,password) VALUES (?,?)').run(email, `${salt}:${scryptSync(password,salt,64).toString('hex')}`).lastInsertRowid);
@@ -21,6 +22,8 @@ test.afterAll(() => {
 test('public experience, language, theme, mobile and contact', async ({ page }) => {
   await page.goto('/id');
   await expect(page.getByRole('heading', {level:1})).toContainText('Teknologi yang bekerja');
+  const structured = await page.locator('script[type="application/ld+json"]').textContent();
+  expect(JSON.parse(structured || '{}')['@type']).toBe('Person');
   await page.getByRole('button',{name:'Jelajahi koneksinya'}).click();
   await expect(page.getByRole('button',{name:'Tutup eksplorasi'})).toBeVisible();
   await page.getByRole('button',{name:'Cloud computing',exact:true}).click();
@@ -39,6 +42,17 @@ test('public experience, language, theme, mobile and contact', async ({ page }) 
   await page.getByRole('button',{name:'Send inquiry'}).click();
   await expect(page.getByRole('status')).toContainText('Message received');
 });
+test('keyboard navigation and reduced motion remain usable', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/id');
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('link', { name: 'Langsung ke konten' })).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/#main$/);
+  await page.setViewportSize({ width: 320, height: 700 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await expect(page.getByRole('button', { name: 'Ganti tema warna' })).toBeVisible();
+});
 test('API rejects unauthorized access and invalid submissions',async({request})=>{
   expect((await request.get('/api/admin')).status()).toBe(401);
   expect((await request.post('/api/admin',{data:{action:'publish'}})).status()).toBe(403);
@@ -47,6 +61,14 @@ test('API rejects unauthorized access and invalid submissions',async({request})=
   expect(response.status()).toBe(200);expect(response.headers()['content-type']).toBe('application/pdf');
   expect((await request.get('/cv?lang=en')).status()).toBe(404);
   expect((await request.get('/not-a-page')).status()).toBe(404);
+  const firstPage = await request.get('/id');
+  const secondPage = await request.get('/id');
+  const policy = firstPage.headers()['content-security-policy'];
+  expect(policy).toContain("'nonce-");
+  expect(policy.split('script-src')[1].split(';')[0]).not.toContain('unsafe-inline');
+  expect(policy).not.toBe(secondPage.headers()['content-security-policy']);
+  const preview = await request.get('/id?preview=1');
+  expect(await preview.text()).toContain('name="robots" content="noindex, nofollow"');
 });
 test('CMS login, draft, publish, restore, inquiry and logout',async({page})=>{
   await page.goto('/admin');
@@ -62,6 +84,13 @@ test('CMS login, draft, publish, restore, inquiry and logout',async({page})=>{
   await expect(page.getByRole('status')).toHaveText('Saved successfully.');
   await page.getByRole('button',{name:'Publish',exact:true}).click();
   await expect(page.getByRole('status')).toHaveText('Saved successfully.');
+  await page.getByRole('button',{name:'settings',exact:true}).click();
+  await expect(page.getByLabel(/^Typography/)).toBeVisible();
+  await expect(page.getByLabel('temperature',{exact:true})).toBeVisible();
+  await page.getByRole('button',{name:'Test published AI connection'}).click();
+  await expect(page.getByRole('status')).toContainText('Asisten belum tersedia');
+  await page.getByRole('button',{name:'seo',exact:true}).click();
+  await expect(page.getByLabel(/^Open Graph image/)).toBeVisible();
   await page.getByRole('button',{name:'revisions',exact:true}).click();
   await page.getByRole('button',{name:'Restore to draft',exact:true}).first().click();
   await expect(page.getByRole('status')).toHaveText('Saved successfully.');
