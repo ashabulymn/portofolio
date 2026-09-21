@@ -1,5 +1,5 @@
 export type Language = 'id' | 'en';
-export type Entry = { url?: string; mediaId?: string; id: string; category: string; title: string; subtitle: string; body: string; order: number; visible: boolean; featured: boolean };
+export type Entry = { groupId?: string; url?: string; mediaId?: string; id: string; category: string; title: string; subtitle: string; body: string; order: number; visible: boolean; featured: boolean };
 export type AIOptions = { temperature: number; maxTokens: number; timeoutMs: number; welcome: string; suggestions: string[] };
 export const defaultAIOptions: AIOptions = { temperature: 0.2, maxTokens: 400, timeoutMs: 15000, welcome: '', suggestions: [] };
 export type Content = { appearance?: { font: 'sans' | 'serif'; spacing: 'compact' | 'relaxed' }; aiOptions?: AIOptions; name: string; role: string; intro: string; email: string; whatsapp: string; location: string; headline: string; entries: Entry[]; seo: { title: string; description: string; noindex?: boolean; imageId?: string }; settings: { motion: boolean; ai: boolean; maintenance: boolean; theme: 'light' | 'dark'; aiModel: string; aiBaseUrl: string; aiPrompt: string; whatsappMessage: string } };

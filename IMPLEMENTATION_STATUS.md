@@ -20,7 +20,7 @@ Status: VERIFIED LOCAL CHECKPOINT — NOT COMPLETE against Prompt.txt.
 ## Not complete / do not represent as production-ready
 
 - PostgreSQL + ORM migrations and S3 storage are not implemented; SQLite/local storage are a documented deviation.
-- Configured navigation/social links, featured project ordering, project image assignment and responsive public images are implemented. Specialized category relations remain incomplete.
+- Configured navigation/social links, featured project ordering, project image assignment and responsive public images are implemented. Skills now support an explicit category relationship editor and grouped public rendering; uncategorized or orphaned skills remain visible.
 - AI connection testing, suggested questions, welcome text and temperature/token/timeout controls are implemented. Live provider verification remains blocked by absent credentials; secrets remain server-environment managed.
 - Typography/spacing controls, active-image Open Graph metadata, Person structured data and preview noindex are implemented. Detailed feature switches, analytics controls and per-page CMS routing remain incomplete.
 - New Indonesian seed content now translates skill labels. Existing editorial records are intentionally preserved rather than overwritten. English CV not supplied.

@@ -84,6 +84,8 @@ test('CMS login, draft, publish, restore, inquiry and logout',async({page})=>{
   await expect(page.getByRole('status')).toHaveText('Saved successfully.');
   await page.getByRole('button',{name:'Publish',exact:true}).click();
   await expect(page.getByRole('status')).toHaveText('Saved successfully.');
+  await page.getByRole('button',{name:'skills',exact:true}).click();
+  await expect(page.getByLabel(/^Skill category/).first()).toBeVisible();
   await page.getByRole('button',{name:'settings',exact:true}).click();
   await expect(page.getByLabel(/^Typography/)).toBeVisible();
   await expect(page.getByLabel('temperature',{exact:true})).toBeVisible();
