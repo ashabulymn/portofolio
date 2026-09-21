@@ -1,0 +1,8 @@
+{
+  "name": "Ashabul portfolio",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:22-bookworm",
+  "forwardPorts": [3000],
+  "postCreateCommand": "npm ci && npm run seed:cv",
+  "remoteEnv": { "SITE_URL": "http://localhost:3000" },
+  "customizations": { "vscode": { "extensions": ["dbaeumer.vscode-eslint"] } }
+}
