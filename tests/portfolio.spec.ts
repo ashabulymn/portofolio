@@ -42,6 +42,18 @@ test('public experience, language, theme, mobile and contact', async ({ page }) 
   await page.getByRole('button',{name:'Send inquiry'}).click();
   await expect(page.getByRole('status')).toContainText('Message received');
 });
+test('core portfolio remains readable without JavaScript', async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  try {
+    const page = await context.newPage();
+    await page.goto(`${process.env.TEST_BASE_URL || 'http://localhost:3000'}/id`);
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    await expect(page.locator('#services')).toBeVisible();
+    await expect(page.locator('#experience')).toBeVisible();
+    await expect(page.getByRole('link', { name: 'WhatsApp', exact: false })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Unduh CV', exact: false })).toBeVisible();
+  } finally { await context.close(); }
+});
 test('keyboard navigation and reduced motion remain usable', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/id');
@@ -88,11 +100,23 @@ test('CMS login, draft, publish, restore, inquiry and logout',async({page})=>{
   await expect(page.getByLabel(/^Skill category/).first()).toBeVisible();
   await page.getByRole('button',{name:'settings',exact:true}).click();
   await expect(page.getByLabel(/^Typography/)).toBeVisible();
+  await expect(page.getByLabel('safeMode', { exact: true })).toBeVisible();
   await expect(page.getByLabel('temperature',{exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Test published AI connection'}).click();
   await expect(page.getByRole('status')).toContainText('Asisten belum tersedia');
   await page.getByRole('button',{name:'seo',exact:true}).click();
   await expect(page.getByLabel(/^Open Graph image/)).toBeVisible();
+  await page.getByRole('button',{name:'settings',exact:true}).click();
+  await page.getByLabel('safeMode',{exact:true}).check();
+  await page.getByRole('button',{name:'Save draft',exact:true}).click();
+  await expect(page.getByRole('status')).toHaveText('Saved successfully.');
+  const previewPage = await page.context().newPage();
+  await previewPage.goto('/id?preview=1');
+  await expect(previewPage.locator('.portfolio')).toHaveClass(/no-motion/);
+  await expect(previewPage.getByRole('button',{name:'Jelajahi koneksinya'})).toHaveCount(0);
+  await expect(previewPage.locator('#services')).toBeVisible();
+  await expect(previewPage.locator('#contact')).toBeVisible();
+  await previewPage.close();
   await page.getByRole('button',{name:'revisions',exact:true}).click();
   await page.getByRole('button',{name:'Restore to draft',exact:true}).first().click();
   await expect(page.getByRole('status')).toHaveText('Saved successfully.');

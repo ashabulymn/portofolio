@@ -2,7 +2,7 @@
 
 Current Phase: verified local application checkpoint; overall master prompt incomplete.
 Current Step: recover and finish implementation gaps.
-Last Verified Step: production build, lint, typecheck, five Playwright tests against isolated database.
+Last Verified Step: production build, lint, typecheck, seven Playwright tests against isolated database; safe-mode preview and no-JavaScript core rendering verified.
 Last Known Good Commit: Git milestone `feat: add verified portfolio platform checkpoint`.
 In Progress: navigation/social/featured project renderers, image relations, AI controls, typography/spacing, SEO metadata, bounded uploads, decoded WebP conversion and per-request script nonce CSP are now implemented and regression-tested. Inquiry retention dry-run/apply is verified. Local stopped-storage restore rehearsal passed. See IMPLEMENTATION_STATUS.md for remaining scope.
 Blocked: live AI response without key/model; Docker validation without CLI; Cloudflare/VPS deployment without operator infrastructure. Other feature work can continue locally.

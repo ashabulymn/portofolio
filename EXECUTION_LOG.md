@@ -1,5 +1,14 @@
 # Execution log
 
+## 2026-09-21 — CMS integration, runtime hardening and resilience
+
+Commits 7afe692 and 2b30556 persist public navigation/social/project media, grouped skills, AI controls/test fallback, SEO and typography settings, decoded metadata-stripped WebP uploads, patched sharp, nonce script CSP and inquiry retention. Subsequent safe-mode work adds independent exploration/image switches and combined emergency fallback in both public UI and AI endpoint.
+
+Validation: production build/lint/typecheck passed; seven Playwright tests passed in 8.5 seconds, including no-JavaScript core access, keyboard/mobile checks and saved safe-mode preview. Local backup copy was restored to isolated storage and all then-existing tests passed. Retention dry-run preserved expired data; apply deleted only expired records. Local mobile load/resource metrics are recorded in QA_REPORT.md, without production performance claims.
+
+Recovery: owner attachment changes remain unstaged; no external credentials created or provider calls certified. Temporary QA servers/storage are stopped/removed after verification. Read IMPLEMENTATION_STATUS.md for remaining work; never infer master-prompt completion from passing local tests.
+
+
 ## 2026-09-21 — source analysis and local implementation checkpoint
 
 Start: main at 03b2b46; attachments only, no application. Existing user deletions of two older prompt files and untracked Prompt.txt preserved.

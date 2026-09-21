@@ -14,6 +14,12 @@
   5. CMS authentication, save draft, publish, restore revision, logout.
 - Browser page and screenshot tools exercised; page title/content verified. Screenshot tool returned an attachment without dependable visual detail in this agent context; no pixel-quality certification claimed.
 
+## Resilience verification
+
+- Latest production regression suite: **7 passed (8.5 s)**, including saved safe-mode preview and core portfolio access with JavaScript disabled.
+- Local Chromium mobile viewport 390×844, reduced motion, unthrottled localhost: DOMContentLoaded/load 368 ms, transferred resource bytes 153,340, no horizontal overflow. This is a local diagnostic measurement, not a Lighthouse score or production network guarantee.
+- Safe-mode preview preserves services/contact while disabling motion and exploration; CMS restoration continues to pass.
+
 ## Additional verified continuation
 
 - Latest production suite: **6 passed (6.8 s)**, with keyboard skip-link navigation, reduced-motion preference and 320px overflow checks, plus invalid chat input returning HTTP 400, including malformed-image rejection, actual WebP decoding, image metadata removal, AI settings/connection fallback, typography/SEO editors, Person structured data and preview noindex.

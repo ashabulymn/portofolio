@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     const { lang, message } = z.object({ lang: z.enum(['id', 'en']), message: z.string().trim().min(1).max(1000) }).parse(await readJson(request, 6000));
     const content = getContent(lang);
     const options = content.aiOptions || defaultAIOptions;
-    if (!content.settings.ai || !process.env.AI_API_KEY || !content.settings.aiModel) return Response.json({ error: lang === 'en' ? 'Assistant unavailable. Please contact Ashabul directly.' : 'Asisten belum tersedia. Silakan hubungi Ashabul langsung.' }, { status: 503 });
+    if (content.settings.safeMode || !content.settings.ai || !process.env.AI_API_KEY || !content.settings.aiModel) return Response.json({ error: lang === 'en' ? 'Assistant unavailable. Please contact Ashabul directly.' : 'Asisten belum tersedia. Silakan hubungi Ashabul langsung.' }, { status: 503 });
     const base = new URL(content.settings.aiBaseUrl);
     const allowed = (process.env.AI_ALLOWED_HOSTS || 'api.openai.com,openrouter.ai').split(',');
     if (base.protocol !== 'https:' || base.username || base.password || !allowed.includes(base.hostname)) throw new Error('Provider not allowed');

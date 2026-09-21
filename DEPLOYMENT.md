@@ -27,6 +27,10 @@ Secure cookies require HTTPS in production. The public domain must match `SITE_U
 
 Stop writes during a full backup: stop the application and copy the entire persistent volume, including SQLite/WAL/SHM if present and uploads. Encrypt backups and restrict operator access: inquiries contain personal data. Retain according to an owner-approved retention policy. Test restore into a separate directory/volume, never over a live database. Restart against restored storage and verify CMS login, published pages, media, CV downloads, and inquiry counts. Online SQLite backups should use the SQLite backup API, not copying only the main file while running.
 
+## Emergency safe mode
+
+In CMS settings, enable `safeMode`, save and preview, then publish. Safe mode disables animation, optional service exploration, project images and the AI interface/backend while preserving services, experience, CV and direct contact links. `exploration` and `projectImages` can also be disabled separately. No WebGL or analytics dependency is loaded, so neither is needed for core rendering. Published settings apply independently to each language.
+
 ## Inquiry retention
 
 Set `INQUIRY_RETENTION_DAYS` to the owner-approved interval (1–3650 days). Run `npm run inquiries:prune` for a dry run, then `npm run inquiries:prune -- --apply` to delete expired inquiries. Schedule the apply command daily through the host scheduler using the same `DATA_DIR`; it is not scheduled automatically. Backups require their own matching expiration policy. This operation does not send data to an external mail or analytics service.

@@ -8,7 +8,7 @@ export const contentSchema = z.object({
   aiOptions: z.object({ temperature: z.number().min(0).max(1), maxTokens: z.number().int().min(50).max(2000), timeoutMs: z.number().int().min(1000).max(30000), welcome: z.string().max(500), suggestions: z.array(z.string().min(1).max(200)).max(6) }).optional(),
   name: z.string().min(1).max(100), role: text, intro: text, email: z.email(), whatsapp: z.string().regex(/^\d{8,15}$/), location: text, headline: text,
   seo: z.object({ title: text, description: text, noindex: z.boolean().optional(), imageId: z.string().regex(/^[0-9a-f-]{36}$/).optional() }),
-  settings: z.object({ motion: z.boolean(), ai: z.boolean(), maintenance: z.boolean(), theme: z.enum(['light', 'dark']), aiModel: z.string().max(200), aiBaseUrl: z.string().url(), aiPrompt: text, whatsappMessage: text }),
+  settings: z.object({ safeMode: z.boolean().optional(), exploration: z.boolean().optional(), projectImages: z.boolean().optional(), motion: z.boolean(), ai: z.boolean(), maintenance: z.boolean(), theme: z.enum(['light', 'dark']), aiModel: z.string().max(200), aiBaseUrl: z.string().url(), aiPrompt: text, whatsappMessage: text }),
   entries: z.array(z.object({ groupId: z.string().regex(/^[a-zA-Z0-9_-]{1,80}$/).optional(), url: z.string().max(2048).refine(value => !value || /^https:\/\/[^\s]+$/.test(value) || /^#[a-z][a-z0-9-]*$/.test(value), 'Use HTTPS or a section anchor').optional(), mediaId: z.string().regex(/^[0-9a-f-]{36}$/).optional(), id: z.string().regex(/^[a-zA-Z0-9_-]{1,80}$/), category: z.string().max(50), title: text, subtitle: text, body: text, order: z.number().int().min(0), visible: z.boolean(), featured: z.boolean() })).max(500),
 });
 export function getContent(lang: Language, draft = false): Content {
