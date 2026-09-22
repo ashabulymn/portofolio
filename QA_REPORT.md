@@ -43,3 +43,8 @@
 Live AI provider, production HTTPS/proxy, Docker image/Compose/Dev Container/Codespaces, PostgreSQL migration, storage resilience, full keyboard/screen-reader audit, Lighthouse budgets, visual anti-template review, adversarial security audit, production backup/restore and independent operator recovery. No Docker CLI or external deployment/AI credentials are available. See IMPLEMENTATION_STATUS.md for remaining implementation gaps.
 
 Tests must not run against production data. Test administrator credentials are randomly generated in memory and cleaned up; no real owner account was created.
+
+## Visual styles and hero verification
+- Production build and ESLint passed after the hero/style changes.
+- Nine Playwright tests passed against an isolated production database: style persistence, independent color modes, 320/390/768/1280px layouts, pause/resume and offscreen behavior, reduced motion, CMS style + typography/spacing preservation, safe-mode preview, no-JavaScript core content, and existing CMS/media/contact regressions.
+- Local owner credentials and database were not modified. No claim of pixel matching the reference website or production deployment verification.

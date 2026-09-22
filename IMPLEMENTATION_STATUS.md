@@ -31,3 +31,10 @@ Status: VERIFIED LOCAL CHECKPOINT — NOT COMPLETE against Prompt.txt.
 - Reference MP4 frames were extracted/opened, but detailed visual interpretation could not be verified with the current image tool.
 
 Do not mark the master prompt Definition of Done satisfied. Continue from this checkpoint, not from a claim of completion.
+
+## Hero motion and visual styles
+- Public style selector: Editorial (default), Cyberpunk and Terminal. Each supports Light/Dark independently; visitor preferences remain in local browser storage.
+- CMS Settings ? Visual style sets the default per language. Save draft and publish to apply it. Existing visitor preferences take priority.
+- Original lightweight SVG infrastructure illustration, not a copy of reference assets. Data paths are illustrative, not live telemetry.
+- Pause/play control; animation pauses offscreen or in a hidden tab. Reduced-motion, motion=false and safe mode retain a static diagram. No WebGL or additional dependencies.
+- Removed the root streaming loading boundary so core content remains visible without JavaScript.

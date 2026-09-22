@@ -100,6 +100,9 @@ test('CMS login, draft, publish, restore, inquiry and logout',async({page})=>{
   await expect(page.getByLabel(/^Skill category/).first()).toBeVisible();
   await page.getByRole('button',{name:'settings',exact:true}).click();
   await expect(page.getByLabel(/^Typography/)).toBeVisible();
+  await page.getByLabel(/^Visual style/).selectOption('cyberpunk');
+  await page.getByLabel(/^Typography/).selectOption('serif');
+  await page.getByLabel(/^Spacing/).selectOption('compact');
   await expect(page.getByLabel('safeMode', { exact: true })).toBeVisible();
   await expect(page.getByLabel('temperature',{exact:true})).toBeVisible();
   await page.getByRole('button',{name:'Test published AI connection'}).click();
@@ -113,6 +116,9 @@ test('CMS login, draft, publish, restore, inquiry and logout',async({page})=>{
   const previewPage = await page.context().newPage();
   await previewPage.goto('/id?preview=1');
   await expect(previewPage.locator('.portfolio')).toHaveClass(/no-motion/);
+  await expect(previewPage.locator('.portfolio')).toHaveClass(/style-cyberpunk/);
+  await expect(previewPage.locator('.hero-network')).not.toHaveClass(/flowing/);
+  await expect(previewPage.locator('.motion-control')).toHaveCount(0);
   await expect(previewPage.getByRole('button',{name:'Jelajahi koneksinya'})).toHaveCount(0);
   await expect(previewPage.locator('#services')).toBeVisible();
   await expect(previewPage.locator('#contact')).toBeVisible();

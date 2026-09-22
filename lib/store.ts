@@ -4,7 +4,7 @@ import { z } from 'zod';
 
 const text = z.string().max(10000);
 export const contentSchema = z.object({
-  appearance: z.object({ font: z.enum(['sans','serif']), spacing: z.enum(['compact','relaxed']) }).optional(),
+  appearance: z.object({ style: z.enum(['editorial','cyberpunk','terminal']).optional(), font: z.enum(['sans','serif']), spacing: z.enum(['compact','relaxed']) }).optional(),
   aiOptions: z.object({ temperature: z.number().min(0).max(1), maxTokens: z.number().int().min(50).max(2000), timeoutMs: z.number().int().min(1000).max(30000), welcome: z.string().max(500), suggestions: z.array(z.string().min(1).max(200)).max(6) }).optional(),
   name: z.string().min(1).max(100), role: text, intro: text, email: z.email(), whatsapp: z.string().regex(/^\d{8,15}$/), location: text, headline: text,
   seo: z.object({ title: text, description: text, noindex: z.boolean().optional(), imageId: z.string().regex(/^[0-9a-f-]{36}$/).optional() }),
