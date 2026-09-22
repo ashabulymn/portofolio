@@ -11,7 +11,8 @@
     "test": "playwright test",
     "inquiries:prune": "node --experimental-strip-types scripts/prune-inquiries.ts",
     "seed:cv": "node --experimental-strip-types scripts/seed-cv.ts",
-    "admin:create": "node --experimental-strip-types scripts/create-admin.ts"
+    "admin:create": "node --experimental-strip-types scripts/create-admin.ts",
+    "notifications:send": "node --experimental-strip-types scripts/send-notifications.ts"
   },
   "dependencies": {
     "next": "^16.2.0",

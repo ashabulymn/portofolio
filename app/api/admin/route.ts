@@ -1,6 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { cookies } from 'next/headers';
 import { database } from '@/lib/db';
+import { notificationHealth } from '@/lib/notifications';
 import { currentAdmin, digest, hashPassword, rateLimit, readJson, sameOrigin, verifyPassword } from '@/lib/security';
 import { getContent, saveContent } from '@/lib/store';
 export const runtime = 'nodejs';
@@ -9,7 +10,7 @@ export async function GET(request: Request) {
   const lang = new URL(request.url).searchParams.get('lang') === 'en' ? 'en' : 'id';
   const content = getContent(lang, true);
   const db = database();
-  try { return Response.json({ content, inquiries: db.prepare('SELECT * FROM inquiries ORDER BY id DESC LIMIT 100').all(), revisions: db.prepare('SELECT id,lang,created,editor FROM revisions WHERE lang=? ORDER BY id DESC LIMIT 30').all(lang), media: db.prepare('SELECT * FROM media ORDER BY created DESC').all(), health: { database: true, aiConfigured: !!process.env.AI_API_KEY } }, { headers: { 'Cache-Control': 'no-store' } }); }
+  try { return Response.json({ content, inquiries: db.prepare('SELECT * FROM inquiries ORDER BY id DESC LIMIT 100').all(), revisions: db.prepare('SELECT id,lang,created,editor FROM revisions WHERE lang=? ORDER BY id DESC LIMIT 30').all(lang), media: db.prepare('SELECT * FROM media ORDER BY created DESC').all(), health: { notifications: notificationHealth(db), database: true, aiConfigured: !!process.env.AI_API_KEY } }, { headers: { 'Cache-Control': 'no-store' } }); }
   finally { db.close(); }
 }
 export async function POST(request: Request) {

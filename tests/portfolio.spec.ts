@@ -90,6 +90,13 @@ test('CMS login, draft, publish, restore, inquiry and logout',async({page})=>{
   await expect(page.getByRole('heading',{name:'Operations'})).toBeVisible();
   await page.getByRole('button',{name:'profile',exact:true}).click();
   await expect(page.getByRole('heading',{name:'Profile & hero'})).toBeVisible();
+  await expect(page).toHaveURL(/\/admin\/profile$/);
+  await page.reload();
+  await expect(page.getByRole('heading',{name:'Profile & hero'})).toBeVisible();
+  await page.getByRole('button',{name:'settings',exact:true}).click();
+  await expect(page).toHaveURL(/\/admin\/settings$/);
+  await page.goBack();
+  await expect(page.getByRole('heading',{name:'Profile & hero'})).toBeVisible();
   const role=page.getByLabel(/^role/);const original=await role.inputValue();
   await role.fill(original);
   await page.getByRole('button',{name:'Save draft',exact:true}).click();

@@ -57,3 +57,15 @@ Open in the provided Dev Container. After port forwarding is ready, update `SITE
 - Missing CV: import the original or activate a language-specific PDF in CMS.
 - Database unavailable: verify directory permissions, disk space and volume mounting.
 - Build output conflicts: stop dev before building; restart the development task afterward.
+
+## Optional inquiry notification worker
+Notifications are disabled by default. To opt in, configure these server-only environment variables:
+- `NOTIFICATION_ENABLED=true`
+- `NOTIFICATION_API_KEY`: Resend API key
+- `NOTIFICATION_FROM`: sender on a verified domain
+- `NOTIFICATION_TO`: owner notification address
+- `SITE_URL`: public portfolio origin
+
+Run `npm run notifications:send` through an operator-managed scheduler (for example once per minute). The worker handles at most 20 queued jobs per run, uses a two-minute claim lease, a ten-second request timeout, provider idempotency keys, and exponential retry delays capped at one hour. Jobs stop after eight failed attempts; inspect `inquiry_notifications` for exhausted jobs and reset attempts/available only after correcting provider configuration. Idempotency is subject to the provider retention window; delivery is not guaranteed exactly once.
+
+Inquiry storage and optional queue insertion are one transaction. Provider outages do not block the contact endpoint. Notification messages include only an inbox link and reference number, never the visitor name, email or message. Enabling delivery shares the configured sender/recipient and site URL with Resend. No real email has been sent or provider credentials validated during local QA. Deleted inquiries are removed from the queue at the next worker run. Disabling notifications stops new queuing and the operator worker; existing jobs remain pending.

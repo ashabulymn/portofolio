@@ -48,3 +48,15 @@ Tests must not run against production data. Test administrator credentials are r
 - Production build and ESLint passed after the hero/style changes.
 - Nine Playwright tests passed against an isolated production database: style persistence, independent color modes, 320/390/768/1280px layouts, pause/resume and offscreen behavior, reduced motion, CMS style + typography/spacing preservation, safe-mode preview, no-JavaScript core content, and existing CMS/media/contact regressions.
 - Local owner credentials and database were not modified. No claim of pixel matching the reference website or production deployment verification.
+
+## CMS section routes
+- Lint, TypeScript and production build passed. All nine isolated Playwright tests passed, including direct section reload and browser Back navigation.
+- Sections use /admin/profile, /admin/settings, /admin/media and corresponding validated category URLs. Authentication remains required; save drafts before reloading.
+
+
+## Inquiry notification checkpoint
+- Added opt-in durable notification outbox and bounded Resend delivery worker with retry/backoff and generic failure records.
+- Lint, TypeScript, production build and all ten Playwright tests passed. Verified queue persistence with notifications enabled; mocked delivery tests cover retry delay, successful delivery, no resend after completion and orphan cleanup.
+- Real provider delivery remains unverified; no external email was sent. PostgreSQL/ORM/S3 migration and production deployment gates remain outstanding.
+
+Notification operations: authenticated CMS now displays enabled/configured status and pending, exhausted and delivered counts. Health-count unit coverage passes; configuration is explicitly not represented as verified delivery.
