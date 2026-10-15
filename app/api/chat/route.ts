@@ -27,6 +27,6 @@ export async function POST(request: Request) {
     return Response.json({ answer: answer.slice(0, 6000) });
   } catch (error) {
     if (error instanceof z.ZodError || error instanceof SyntaxError) return Response.json({ error: 'Invalid message or language.' }, { status: 400 });
-    return Response.json({ error: 'Asisten tidak tersedia / Assistant unavailable. WhatsApp: +62 852-9191-6565' }, { status: 503 });
+    return Response.json({ error: 'Asisten tidak tersedia / Assistant unavailable. WhatsApp: +62 896-5545-5661' }, { status: 503 });
   }
 }
