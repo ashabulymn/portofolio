@@ -12,6 +12,9 @@ COPY --from=build --chown=node:node /app/.next/standalone ./
 COPY --from=build --chown=node:node /app/.next/static ./.next/static
 COPY --from=build --chown=node:node /app/public ./public
 COPY --from=build --chown=node:node /app/scripts ./scripts
+# Database GeoIP (negara+kota) untuk statistik pengunjung; dibaca via GEODATADIR.
+COPY --from=build --chown=node:node /app/node_modules/geoip-lite/data ./geo-data
+ENV GEODATADIR=/app/geo-data
 COPY --from=build --chown=node:node ["/app/CV ASY 2025 ID2 latest.pdf", "./CV ASY 2025 ID2 latest.pdf"]
 RUN mkdir -p /app/data && chown node:node /app/data
 USER node

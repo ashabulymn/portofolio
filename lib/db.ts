@@ -14,9 +14,14 @@ export function database() {
     CREATE TABLE IF NOT EXISTS inquiries (id INTEGER PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL, category TEXT NOT NULL, message TEXT NOT NULL, created TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS media (id TEXT PRIMARY KEY, filename TEXT NOT NULL, mime TEXT NOT NULL, title TEXT NOT NULL, alt TEXT NOT NULL, description TEXT NOT NULL DEFAULT '', language TEXT NOT NULL, kind TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 0, created TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS limits (key TEXT PRIMARY KEY, count INTEGER NOT NULL, until INTEGER NOT NULL);
-    CREATE TABLE IF NOT EXISTS visits (id INTEGER PRIMARY KEY, ts INTEGER NOT NULL, visitor TEXT NOT NULL, path TEXT NOT NULL, referrer TEXT NOT NULL DEFAULT '', ref_domain TEXT NOT NULL DEFAULT '', ua TEXT NOT NULL DEFAULT '', browser TEXT NOT NULL DEFAULT '', os TEXT NOT NULL DEFAULT '', device TEXT NOT NULL DEFAULT '', ip_hash TEXT NOT NULL DEFAULT '', is_bot INTEGER NOT NULL DEFAULT 0);
+    CREATE TABLE IF NOT EXISTS visits (id INTEGER PRIMARY KEY, ts INTEGER NOT NULL, visitor TEXT NOT NULL, path TEXT NOT NULL, referrer TEXT NOT NULL DEFAULT '', ref_domain TEXT NOT NULL DEFAULT '', ua TEXT NOT NULL DEFAULT '', browser TEXT NOT NULL DEFAULT '', os TEXT NOT NULL DEFAULT '', device TEXT NOT NULL DEFAULT '', ip_hash TEXT NOT NULL DEFAULT '', is_bot INTEGER NOT NULL DEFAULT 0, country TEXT NOT NULL DEFAULT '', city TEXT NOT NULL DEFAULT '');
     CREATE INDEX IF NOT EXISTS idx_visits_ts ON visits(ts);
     CREATE INDEX IF NOT EXISTS idx_visits_path ON visits(path);
   `);
+  // Migrasi additive: database lama tidak punya kolom country/city — tambahkan tanpa menghapus data.
+  const cols = db.prepare('PRAGMA table_info(visits)').all() as { name: string }[];
+  const names = new Set(cols.map((c) => c.name));
+  if (!names.has('country')) db.exec("ALTER TABLE visits ADD COLUMN country TEXT NOT NULL DEFAULT ''");
+  if (!names.has('city')) db.exec("ALTER TABLE visits ADD COLUMN city TEXT NOT NULL DEFAULT ''");
   return db;
 }

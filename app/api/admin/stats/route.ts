@@ -8,7 +8,7 @@ export const runtime = 'nodejs';
  * Query:
  *   days=7|30|90            -> rentang preset
  *   from=YYYY-MM-DD&to=YYYY-MM-DD -> rentang custom (WIB, inklusif)
- *   format=csv&view=daily|pages|referrers|browsers|devices|hours|recent -> unduh CSV
+ *   format=csv&view=daily|pages|referrers|browsers|devices|countries|cities|hours|recent -> unduh CSV
  */
 export async function GET(request: Request) {
   if (!(await currentAdmin())) return Response.json({ error: 'Unauthorized' }, { status: 401 });

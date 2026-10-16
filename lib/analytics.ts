@@ -1,7 +1,24 @@
 import { randomUUID } from 'node:crypto';
 import { cookies, headers } from 'next/headers';
+import geoip from 'geoip-lite';
 import { database } from './db';
 import { digest } from './security';
+
+// Lookup GeoIP offline (database MaxMind GeoLite2, dibundel via geoip-lite).
+// Hanya negara (kode ISO) dan kota yang dipakai — IP mentah tidak disimpan.
+// Lokasi file data: env GEODATADIR (di Docker: /app/geo-data), fallback ../data/ relatif paket.
+
+const regionNames = new Intl.DisplayNames(['id'], { type: 'region' });
+/** Kode ISO 'ID' -> 'Indonesia'. '' -> ''. */
+export function countryName(code: string): string {
+  if (!code) return '';
+  try {
+    return regionNames.of(code) || code;
+  } catch {
+    return code;
+  }
+}
+const UNKNOWN = '(tidak diketahui)';
 
 // Zona waktu laporan: Asia/Jakarta (UTC+7, tanpa DST).
 const JAKARTA_OFFSET_S = 7 * 3600;
@@ -51,18 +68,28 @@ export async function trackPageView(path: string) {
     // Cookie pv_id dipasang oleh middleware (proxy.ts); baca saja di sini.
     const visitor = c.get('pv_id')?.value || randomUUID();
     // IP tidak disimpan mentah — hanya hash untuk membantu deduplikasi.
+    // Lokasi diperkirakan dari IP saat kunjungan (negara + kota), lalu IP dibuang.
     const fwd = h.get('x-forwarded-for')?.split(',')[0]?.trim() || '';
     const ipHash = fwd ? digest('pv|' + fwd) : '';
+    let country = '';
+    let city = '';
+    try {
+      const g = fwd ? geoip.lookup(fwd) : null;
+      if (g?.country) country = g.country.toUpperCase().slice(0, 2);
+      if (g?.city) city = g.city.slice(0, 120);
+    } catch {
+      // Lookup gagal: catat tanpa lokasi.
+    }
     const referrer = h.get('referer') || '';
     const now = Date.now();
     const db = database();
     try {
       db.prepare(
-        'INSERT INTO visits (ts, visitor, path, referrer, ref_domain, ua, browser, os, device, ip_hash, is_bot) VALUES (?,?,?,?,?,?,?,?,?,?,?)'
+        'INSERT INTO visits (ts, visitor, path, referrer, ref_domain, ua, browser, os, device, ip_hash, is_bot, country, city) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)'
       ).run(
         now, visitor, path.slice(0, 200), referrer.slice(0, 500),
         refDomain(referrer).slice(0, 120), ua.slice(0, 500),
-        browser, os, device, ipHash, isBot ? 1 : 0
+        browser, os, device, ipHash, isBot ? 1 : 0, country, city
       );
       // Retensi 400 hari.
       db.prepare('DELETE FROM visits WHERE ts < ?').run(now - 400 * 86400000);
@@ -76,7 +103,7 @@ export async function trackPageView(path: string) {
 
 export type DayRow = { d: string; c: number; u: number };
 export type CountRow = { label: string; c: number; u?: number };
-export type RecentRow = { ts: number; path: string; browser: string; os: string; device: string; referrer: string };
+export type RecentRow = { ts: number; path: string; browser: string; os: string; device: string; referrer: string; country: string; countryCode: string; city: string };
 export type Stats = {
   days: number | null;
   total: number;
@@ -95,6 +122,8 @@ export type Stats = {
   browsers: CountRow[];
   systems: CountRow[];
   devices: CountRow[];
+  countries: { code: string; name: string; c: number; u: number }[];
+  cities: CountRow[];
   hours: { h: string; c: number }[];
   recent: RecentRow[];
   from: string;
@@ -157,12 +186,30 @@ function computeStats(cutoff: number, end: number, days: number | null): Stats {
       `SELECT strftime('%H', ts/1000,'unixepoch','+7 hours') h, COUNT(*) c FROM visits WHERE ${human} GROUP BY h ORDER BY h`,
       cutoff, end
     ).map(r => ({ h: String(r.h), c: Number(r.c) }));
+    const countries = rows(
+      `SELECT country code, COUNT(*) c, COUNT(DISTINCT visitor) u FROM visits WHERE ${human} GROUP BY country ORDER BY c DESC LIMIT 10`,
+      cutoff, end
+    ).map(r => {
+      const code = String(r.code);
+      return { code, name: code ? countryName(code) : UNKNOWN, c: Number(r.c), u: Number(r.u) };
+    });
+    const cities = rows(
+      `SELECT country, city, COUNT(*) c, COUNT(DISTINCT visitor) u FROM visits WHERE ${human} GROUP BY country, city ORDER BY c DESC LIMIT 10`,
+      cutoff, end
+    ).map(r => {
+      const code = String(r.country);
+      const city = String(r.city);
+      const name = code ? countryName(code) : UNKNOWN;
+      return { label: city ? `${city}, ${name}` : name, c: Number(r.c), u: Number(r.u) };
+    });
     const recent = rows(
-      `SELECT ts, path, browser, os, device, ref_domain FROM visits WHERE ${human} ORDER BY ts DESC LIMIT 20`,
+      `SELECT ts, path, browser, os, device, ref_domain, country, city FROM visits WHERE ${human} ORDER BY ts DESC LIMIT 20`,
       cutoff, end
     ).map(r => ({
       ts: Number(r.ts), path: String(r.path), browser: String(r.browser),
       os: String(r.os), device: String(r.device), referrer: String(r.ref_domain),
+      countryCode: String(r.country), country: String(r.country) ? countryName(String(r.country)) : '',
+      city: String(r.city),
     }));
     return {
       days,
@@ -178,6 +225,8 @@ function computeStats(cutoff: number, end: number, days: number | null): Stats {
       browsers: grp('browser', 8, false),
       systems: grp('os', 8, false),
       devices: grp('device', 5, false),
+      countries,
+      cities,
       hours,
       recent,
       from: jakartaDayStr(cutoff),
@@ -225,11 +274,17 @@ export function statsToCsv(s: Stats, view: string): string | null {
   } else if (view === 'hours') {
     out = line(['jam_wib', 'kunjungan']);
     for (const r of s.hours) out += line([r.h, r.c]);
+  } else if (view === 'countries') {
+    out = line(['negara', 'kode_negara', 'kunjungan', 'unik']);
+    for (const r of s.countries) out += line([r.name, r.code || '-', r.c, r.u]);
+  } else if (view === 'cities') {
+    out = line(['kota', 'kunjungan', 'unik']);
+    for (const r of s.cities) out += line([r.label, r.c, r.u ?? '']);
   } else if (view === 'recent') {
-    out = line(['waktu_wib', 'halaman', 'browser', 'os', 'perangkat', 'referrer']);
+    out = line(['waktu_wib', 'halaman', 'browser', 'os', 'perangkat', 'referrer', 'negara', 'kota']);
     for (const r of s.recent) {
       const w = new Date(r.ts).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      out += line([w, r.path, r.browser, r.os, r.device, r.referrer]);
+      out += line([w, r.path, r.browser, r.os, r.device, r.referrer, r.country || '-', r.city || '-']);
     }
   } else {
     return null;

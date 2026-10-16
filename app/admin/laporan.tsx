@@ -130,6 +130,8 @@ export default function Laporan() {
           <Table title="Browser" rows={stats.browsers} csvHref={`/api/admin/stats?format=csv&view=browsers&${q}`} />
           <Table title="Sistem Operasi" rows={stats.systems} />
           <Table title="Perangkat" rows={stats.devices} csvHref={`/api/admin/stats?format=csv&view=devices&${q}`} />
+          <Table title="Negara" rows={stats.countries.map(c => ({ label: `${c.name}${c.code ? ` (${c.code})` : ''}`, c: c.c, u: c.u }))} csvHref={`/api/admin/stats?format=csv&view=countries&${q}`} />
+          <Table title="Kota" rows={stats.cities} csvHref={`/api/admin/stats?format=csv&view=cities&${q}`} />
         </div>
         <h3 style={{ marginTop: 20 }}>Jam Ramai (WIB) <a href={`/api/admin/stats?format=csv&view=hours&${q}`} style={{ fontWeight: 400, fontSize: 11 }}>Unduh CSV</a></h3>
         {stats.hours.length ? (
@@ -153,6 +155,7 @@ export default function Laporan() {
                 <th style={{ padding: '6px 4px' }}>Waktu (WIB)</th>
                 <th style={{ padding: '6px 4px' }}>Halaman</th>
                 <th style={{ padding: '6px 4px' }}>Perangkat / Browser</th>
+                <th style={{ padding: '6px 4px' }}>Lokasi</th>
                 <th style={{ padding: '6px 4px' }}>Referrer</th>
               </tr>
             </thead>
@@ -162,6 +165,7 @@ export default function Laporan() {
                   <td style={{ padding: '6px 4px', whiteSpace: 'nowrap' }}>{wib(r.ts)}</td>
                   <td style={{ padding: '6px 4px' }}>{r.path}</td>
                   <td style={{ padding: '6px 4px' }}>{r.device} · {r.browser} · {r.os}</td>
+                  <td style={{ padding: '6px 4px' }}>{[r.city, r.country].filter(Boolean).join(', ') || '—'}</td>
                   <td style={{ padding: '6px 4px', wordBreak: 'break-all' }}>{r.referrer}</td>
                 </tr>
               ))}
@@ -171,7 +175,9 @@ export default function Laporan() {
         <p className="small" style={{ marginTop: 16 }}>
           Bot dan crawler otomatis dikecualikan dari semua angka ({fmt(stats.bots)} kunjungan bot tercatat pada rentang ini).
           Sesi = rangkaian kunjungan satu pengunjung dengan jeda &lt; 30 menit.
-          Alamat IP tidak disimpan — hanya hash anonim untuk deduplikasi. Data disimpan 400 hari.
+          Alamat IP tidak disimpan — hanya hash anonim untuk deduplikasi.
+          Lokasi (negara + kota) diperkirakan dari IP saat kunjungan lalu IP dibuang; data lama tidak punya lokasi.
+          Data disimpan 400 hari.
         </p>
       </>}
     </section>
