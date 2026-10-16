@@ -1,7 +1,9 @@
 import { database } from '@/lib/db';
+import { trackPageView } from '@/lib/analytics';
 export const dynamic = 'force-dynamic';
 export async function GET(request: Request) {
   const lang = new URL(request.url).searchParams.get('lang') === 'en' ? 'en' : 'id';
+  await trackPageView('/cv');
   const db = database();
   try {
     const media = db.prepare("SELECT id FROM media WHERE kind='cv' AND language=? AND active=1 ORDER BY created DESC LIMIT 1").get(lang) as { id: string } | undefined;

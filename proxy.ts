@@ -12,6 +12,16 @@ export function proxy(request: NextRequest) {
   headers.set('Content-Security-Policy', policy);
   const response = NextResponse.next({ request: { headers } });
   response.headers.set('Content-Security-Policy', policy);
+  // Cookie identitas pengunjung untuk statistik (dibaca server-side, tidak untuk iklan).
+  if (!request.cookies.get('pv_id')) {
+    response.cookies.set('pv_id', crypto.randomUUID(), {
+      httpOnly: true,
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 365 * 24 * 3600,
+      secure: process.env.NODE_ENV === 'production',
+    });
+  }
   return response;
 }
 export const config = { matcher: ['/((?!_next/static|_next/image).*)'] };

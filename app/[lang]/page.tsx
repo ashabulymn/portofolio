@@ -5,6 +5,7 @@ import { currentAdmin } from '@/lib/security';
 import Portfolio from '@/app/portfolio';
 import type { Metadata } from 'next';
 import { database } from '@/lib/db';
+import { trackPageView } from '@/lib/analytics';
 export const dynamic = 'force-dynamic';
 export async function generateMetadata({ params, searchParams }: { params: Promise<{ lang: string }>; searchParams: Promise<{ preview?: string }> }): Promise<Metadata> {
   const { lang } = await params;
@@ -21,6 +22,7 @@ export default async function Page({ params, searchParams }: { params: Promise<{
   const { lang } = await params;
   if (lang !== 'id' && lang !== 'en') notFound();
   const preview = (await searchParams).preview === '1' && !!await currentAdmin();
+  if (!preview) await trackPageView(`/${lang}`);
   const content = getContent(lang, preview);
   // Provider configuration and instructions never enter the public client payload.
   const publicContent = { ...content, settings: { ...content.settings, aiBaseUrl: '', aiModel: '', aiPrompt: '' }, entries: content.entries.filter(e => e.visible && e.category !== 'ai-knowledge') };
