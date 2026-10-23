@@ -27,10 +27,10 @@ const jobs = [
 export function initialContent(lang: Language): Content {
   const en = lang === 'en';
   return {
-    name: 'Ashabul Yamin', role: 'IT Technical Support', location: 'Pelalawan, Indonesia', email: 'ashabulymn@gmail.com', whatsapp: '6289655455661',
+    name: 'Ashabul Yamin', role: 'IT Enthusiast', location: 'Pelalawan, Indonesia', email: 'ashabulymn@gmail.com', whatsapp: '6289655455661',
     headline: en ? 'Technology that works.\nFor the people behind it.' : 'Teknologi yang bekerja.\nUntuk manusia di baliknya.',
     intro: en ? 'From everyday troubleshooting to connected infrastructure. Practical technical support, with clear communication at every step.' : 'Dari kendala sehari-hari hingga infrastruktur yang terhubung. Dukungan teknis yang praktis, dengan komunikasi yang jelas di setiap langkah.',
-    seo: { title: 'Ashabul Yamin — IT Technical Support', description: en ? 'IT support, networks, websites, and technical services in Pelalawan, Indonesia.' : 'Dukungan IT, jaringan, website, dan layanan teknis di Pelalawan, Indonesia.' },
+    seo: { title: 'Ashabul Yamin — IT Enthusiast', description: en ? 'IT support, networks, websites, and technical services in Pelalawan, Indonesia.' : 'Dukungan IT, jaringan, website, dan layanan teknis di Pelalawan, Indonesia.' },
     settings: { motion: true, ai: false, maintenance: false, theme: 'light', aiModel: '', aiBaseUrl: 'https://api.openai.com/v1', aiPrompt: en ? 'You are a portfolio assistant, not Ashabul Yamin. Answer only from approved knowledge. If unknown, say so. Never invent prices, projects or professional facts.' : 'Anda asisten portofolio, bukan Ashabul Yamin. Jawab hanya berdasarkan pengetahuan yang disetujui. Jika tidak diketahui, katakan demikian. Jangan mengarang harga, proyek atau fakta profesional.', whatsappMessage: en ? 'Hello Ashabul, I would like to discuss a technical need.' : 'Halo Ashabul, saya ingin berdiskusi mengenai kebutuhan teknis.' },
     entries: [
       ...services.map((s, i) => ({ id: s[0], category: 'services', title: s[en ? 2 : 1], subtitle: '', body: s[en ? 4 : 3], order: i, visible: true, featured: i < 4 })),
